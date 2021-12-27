@@ -18,10 +18,13 @@ app.get('/', async (req, res) => {
     res.json({ message: 'App is running' });
 });
 
-app.get('/:ingredient', async (req, res) => {
-    const query = 'SELECT * FROM ingredient WHERE name = ?';
-    connection.query(query, [req.params.breed], (error, results) => {
-        if (!results[0]) {
+app.get('/ingredient', async (req, res) => {
+    let ingredientName = req.query.name;
+    const query = `SELECT * FROM ingredient WHERE name=\"${ingredientName}\"`;
+    console.log(query);
+    connection.query(query, (error, results) => {
+        if (error) console.log(error);
+        else if (!results[0]) {
             res.json({ results: 'None' });
         }
         else {
