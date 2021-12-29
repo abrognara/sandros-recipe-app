@@ -32,3 +32,18 @@ app.get('/ingredient', async (req, res) => {
         }
     });
 });
+
+app.post('/ingredient', async (req, res) => {
+    let name = req.body.name;
+    if (!name) res.json({ status: 'failure', reason: 'Please include a value for name' });
+    const query = `INSERT INTO ingredient VALUES (DEFAULT,\"${name}\")`;
+    console.log(query);
+    connection.query(query, (error) => {
+        if (error) {
+            res.json({ status: 'failure', reason: error.code });
+        }
+        else {
+            res.json({ status: 'success', created: name });
+        }
+    });
+});
