@@ -33,6 +33,20 @@ app.get('/ingredient', async (req, res) => {
     });
 });
 
+app.get('/ingredients', async (req, res) => {
+    const query = `SELECT * FROM ingredient`;
+    console.log(query);
+    connection.query(query, (error, results) => {
+        if (error) console.log(error);
+        else if (!results[0]) {
+            res.json({ results: 'None' });
+        }
+        else {
+            res.json(results);
+        }
+    });
+});
+
 app.post('/ingredient', async (req, res) => {
     let name = req.body.name;
     if (!name) res.json({ status: 'failure', reason: 'Please include a value for name' });
