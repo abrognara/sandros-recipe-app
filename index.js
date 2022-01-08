@@ -20,7 +20,7 @@ app.get('/', async (req, res) => {
 
 app.get('/ingredient', async (req, res) => {
     let ingredientName = req.query.name;
-    const query = `SELECT * FROM ingredient WHERE name=\"${ingredientName}\"`;
+    const query = `SELECT * FROM ingredients WHERE name=\"${ingredientName}\"`;
     console.log(query);
     connection.query(query, (error, results) => {
         if (error) console.log(error);
@@ -34,7 +34,7 @@ app.get('/ingredient', async (req, res) => {
 });
 
 app.get('/ingredients', async (req, res) => {
-    const query = `SELECT * FROM ingredient`;
+    const query = `SELECT * FROM ingredients`;
     console.log(query);
     connection.query(query, (error, results) => {
         if (error) console.log(error);
@@ -50,7 +50,7 @@ app.get('/ingredients', async (req, res) => {
 app.post('/ingredient', async (req, res) => {
     let name = req.body.name;
     if (!name) res.json({ status: 'failure', reason: 'Please include a value for name' });
-    const query = `INSERT INTO ingredient VALUES (DEFAULT,\"${name}\")`;
+    const query = `INSERT INTO ingredients VALUES (DEFAULT,\"${name}\")`;
     console.log(query);
     connection.query(query, (error) => {
         if (error) {
