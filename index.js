@@ -49,7 +49,7 @@ app.get('/ingredients', async (req, res) => {
 
 app.post('/ingredient', async (req, res) => {
     let name = req.body.name;
-    if (!name) res.json({ status: 'failure', reason: 'Please include a value for name' });
+    if (!name) res.status(400).send('Please include an ingredient name');
     const query = `INSERT INTO ingredients VALUES (DEFAULT,\"${name}\")`;
     console.log(query);
     connection.query(query, (error) => {
@@ -60,4 +60,10 @@ app.post('/ingredient', async (req, res) => {
             res.json({ status: 'success', created: name });
         }
     });
+});
+
+app.post('/recipe', async (req, res) => {
+    let name = req.body.name;
+    if (!name) res.status(400).send('Please include a recipe name');
+    
 });
