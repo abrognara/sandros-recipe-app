@@ -76,7 +76,8 @@ app.get('/recipe', async (req, res) => {
     const name = req.query.name;
     const query = `SELECT * FROM recipe_details rd
         JOIN recipes r ON r.recipeId = rd.recipeId AND r.name = \"${name}\"
-        JOIN ingredients i ON i.ingredientId = rd.ingredientId;`;
+        JOIN ingredients i ON i.ingredientId = rd.ingredientId
+        JOIN steps s ON r.recipeId = s.recipeId;`;
     console.log(query);
 
     pool.query(query, (error, results) => {
