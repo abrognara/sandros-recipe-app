@@ -72,10 +72,18 @@ app.get('/recipes', async (req, res) => {
     });
 });
 
-// app.get('/recipe', async (req, res) => {
-//     const name = req.query.name;
-//     const query = `SELECT * FROM recipe_details`;
-// });
+app.get('/recipe', async (req, res) => {
+    const name = req.query.name;
+    const query = `SELECT * FROM recipe_details rd
+        JOIN recipes r ON r.recipeId = rd.recipeId AND r.name = \"${name}\"
+        JOIN ingredients i ON i.ingredientId = rd.ingredientId;`;
+    console.log(query);
+
+    pool.query(query, (error, results) => {
+        if (error) console.log(error);
+        res.json(results);
+    });
+});
 
 // app.post('/recipe', async (req, res) => {
 //     let name = req.body.name;
