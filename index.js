@@ -72,6 +72,11 @@ app.get('/recipes', async (req, res) => {
     });
 });
 
+// app.get('/recipe', async (req, res) => {
+//     const name = req.query.name;
+//     const query = `SELECT * FROM recipe_details`;
+// });
+
 // app.post('/recipe', async (req, res) => {
 //     let name = req.body.name;
 //     if (!name) res.status(400).send('Please include a recipe name');
