@@ -82,7 +82,39 @@ app.get('/recipe', async (req, res) => {
 
     pool.query(query, (error, results) => {
         if (error) console.log(error);
-        res.json(results);
+        if (results.length === 0) res.json(results);
+        /* 
+            Collect unique ingredients & steps 
+            TODO: optimize sql query if possible or code
+        */
+        let ingredientIds = new Set();
+        let stepIds = new Set();
+        const responseObj = { recipeId: results[0].recipeId, ingredients: [], steps: [] };
+
+        results.map(elm => {
+            const inId = elm.ingredientId;
+            if (!ingredientIds.has(inId)) {
+                const o = { 
+                    ingredientId: inId,
+                    ingredientName: elm.name,
+                    amount: elm.amount,
+                    metric: elm.metric
+                };
+                responseObj.ingredients.push(o);
+                ingredientIds.add(inId);
+            }
+            const stepId = elm.stepId;
+            if (!stepIds.has(stepid)) {
+                const o = { stepId: stepId, text: elm.text };
+                responseObj.steps.push(o);
+                stepIds.add(stepIds);
+            }
+        });
+
+        console.log(`ingredient ids: ${ingredientIds}`);
+        console.log(`step ids: ${stepIds}`);
+
+        res.json(responseObj);
     });
 });
 
