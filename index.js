@@ -1,3 +1,4 @@
+const e = require('express');
 const express = require('express');
 // const mysql = require('mysql');
 const pool = require('./database');
@@ -74,48 +75,53 @@ app.get('/recipes', async (req, res) => {
 
 app.get('/recipe', async (req, res) => {
     const name = req.query.name;
-    const query = `SELECT * FROM recipe_details rd
+    const query1 = `SELECT rd.recipeId, rd.ingredientId, rd.amount, rd.metric, i.name AS ingredientName FROM recipe_details rd
         JOIN recipes r ON r.recipeId = rd.recipeId AND r.name = \"${name}\"
-        JOIN ingredients i ON i.ingredientId = rd.ingredientId
-        JOIN steps s ON r.recipeId = s.recipeId;`;
-    console.log(query);
+        JOIN ingredients i ON i.ingredientId = rd.ingredientId;`;
+    console.log(query1);
 
-    pool.query(query, (error, results) => {
+    const query2 = `SELECT s.recipeId, s.stepId, s.text FROM steps s
+        JOIN recipes r ON r.recipeId = s.recipeId AND r.name = \"${name}\";`;
+    console.log(query2);
+
+    // TODO ingredients should have a col for order, return with ORDER BY
+    let recipeId = '';
+    let ingredients = [];
+    let steps = []
+
+    /* 
+        Collect unique ingredients & steps 
+        TODO: optimize sql query if possible or code
+    */
+    pool.query(query1, (error, results) => {
         if (error) console.log(error);
         if (results.length === 0) res.json(results);
-        /* 
-            Collect unique ingredients & steps 
-            TODO: optimize sql query if possible or code
-        */
-        let ingredientIds = new Set();
-        let stepIds = new Set();
-        const responseObj = { recipeId: results[0].recipeId, ingredients: [], steps: [] };
-
-        results.map(elm => {
-            const inId = elm.ingredientId;
-            if (!ingredientIds.has(inId)) {
-                const o = { 
-                    ingredientId: inId,
-                    ingredientName: elm.name,
-                    amount: elm.amount,
-                    metric: elm.metric
-                };
-                responseObj.ingredients.push(o);
-                ingredientIds.add(inId);
-            }
-            const stepId = elm.stepId;
-            if (!stepIds.has(stepid)) {
-                const o = { stepId: stepId, text: elm.text };
-                responseObj.steps.push(o);
-                stepIds.add(stepIds);
-            }
+        
+        recipeId = results[0].recipeId;
+        results.forEach(elm => {
+            ingredients.push({ 
+                ingredientId: elm.ingredientId,
+                amount: elm.amount,
+                metric: elm.metric,
+                ingredientName: elm.ingredientName
+            });
         });
 
         console.log(`ingredient ids: ${ingredientIds}`);
         console.log(`step ids: ${stepIds}`);
-
-        res.json(responseObj);
     });
+
+    pool.query(query2, (error, results) => {
+        if (error) console.log(error);
+        if (results.length === 0) res.json(results);
+
+        recipeId = results[0].recipeId;
+        results.forEach(elm => {
+            steps.push({ stepId: elm.stepId, text: elm.text });
+        });
+    });
+
+    res.json({ recipeId: recipeId, ingredients: ingredients, steps: steps });
 });
 
 // app.post('/recipe', async (req, res) => {
